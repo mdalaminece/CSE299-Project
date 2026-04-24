@@ -1,48 +1,29 @@
 <?php
-require_once __DIR__ . '/bootstrap.php';
+session_start();
 
-if (is_logged_in()) {
-    redirect('dashboard.php');
-}
-
-if (!isset($_SESSION['pending_otp']) || !isset($_SESSION['pending_user'])) {
-    redirect('login.php');
-}
-
-if (is_post()) {
-    verify_csrf();
-    $entered_otp = $_POST['otp'] ?? '';
-
-    if ((string)$entered_otp === (string)$_SESSION['pending_otp']) {
-        $user = $_SESSION['pending_user'];
-        login_user($user);
-        
-        unset($_SESSION['pending_otp'], $_SESSION['pending_user']);
-        
-        flash('success', 'Welcome back, ' . $user['name'] . '. OTP verified successfully.');
-        redirect('dashboard.php');
+if(isset($_POST['otp'])){
+    if(isset($_SESSION['otp']) && $_POST['otp'] == $_SESSION['otp']){
+        unset($_SESSION['otp']);
+        echo "<script>alert('OTP Verified Successfully!'); window.location.href='welcome.html';</script>";
+        exit();
     } else {
-        flash('error', 'Invalid OTP. Please try again.');
-        redirect('verify_otp.php');
+        echo "<script>alert('Invalid OTP! Try Again.'); window.location.href='verify_otp.php';</script>";
+        exit();
     }
 }
-
-$pageTitle = page_title('Verify OTP');
-require_once __DIR__ . '/header.php';
 ?>
-<main class="auth-page">
-    <section class="auth-card">
-        <div>
-            <span class="eyebrow">Security Verification</span>
-            <h1>Enter OTP</h1>
-            <p>Please check your email for a 6-digit one-time password and enter it below.</p>
-        </div>
-        <form method="post" class="form-grid">
-            <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>">
-            <label><span>OTP Code</span><input type="text" name="otp" placeholder="123456" required></label>
-            <button class="button" type="submit">Verify & Login</button>
-        </form>
-        <p class="helper-text"><a href="<?= e(app_url('login.php')) ?>">Back to Login</a></p>
-    </section>
-</main>
-<?php require_once __DIR__ . '/footer.php'; ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Verify OTP</title>
+</head>
+<body>
+    <h2>Verify OTP</h2>
+    <form method="post">
+        <label for="otp">Enter OTP:</label>
+        <input type="text" name="otp" required>
+        <button type="submit">Verify</button>
+    </form>
+</body>
+</html>
