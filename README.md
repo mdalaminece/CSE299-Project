@@ -1,4 +1,5 @@
-# Gym Management System with AI Assistants
+# Fit Quest Omni  Gym Management System with AI Assistants on Web, Facebook Messenger, and Telegram
+
 
 This repository combines a PHP-based gym management web application with two AI-powered assistant layers:
 
